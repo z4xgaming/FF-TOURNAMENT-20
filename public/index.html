@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXORA — Tournament Panel</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",sans-serif; }
+:root {
+  --bg:#0b0b14; --bg2:#11111c; --card:#15151f; --border:#25253a;
+  --accent:#8b5cf6; --accent2:#22d3ee;
+  --text:#e6e6f0; --muted:#8b8ba7;
+  --ok:#22c55e; --err:#ef4444; --warn:#f59e0b; --gold:#fbbf24;
+}
+body {
+  min-height:100vh;
+  background:radial-gradient(circle at top, #1a1030, #06060d 70%);
+  color:var(--text); padding:16px;
+}
+.app { max-width:1100px; margin:0 auto; }
+
+/* HEADER */
+.header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:16px 22px; background:var(--bg2);
+  border:1px solid var(--border); border-radius:14px; margin-bottom:16px;
+  flex-wrap:wrap; gap:12px;
+}
+.brand { display:flex; align-items:center; gap:12px; }
+.logo {
+  width:44px; height:44px; border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid; place-items:center; font-size:22px;
+}
+.brand h1 { font-size:20px; letter-spacing:1px; }
+.brand p { font-size:11px; color:var(--muted); margin-top:2px; }
+nav { display:flex; gap:8px; }
+nav button {
+  padding:10px 16px; background:var(--card); color:var(--muted);
+  border:1px solid var(--border); border-radius:10px;
+  font-weight:600; font-size:13px; cursor:pointer; transition:.2s;
+}
+nav button:hover { color:#fff; border-color:var(--accent); }
+nav button.active {
+  background:linear-gradient(135deg,var(--accent),#6d28d9);
+  color:#fff; border-color:transparent;
+}
+
+/* PANELS */
+.panel {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:16px; padding:24px; margin-bottom:16px;
+}
+.panel h2 { font-size:18px; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.panel h3 { font-size:15px; margin:18px 0 10px; color:var(--accent2); }
+
+/* GRID */
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+
+/* TOURNAMENT CARD */
+.t-card {
+  background:linear-gradient(180deg, #171725, #101018);
+  border:1px solid var(--border); border-radius:14px;
+  padding:18px; cursor:pointer; transition:.2s;
+  position:relative; overflow:hidden;
+}
+.t-card:hover {
+  border-color:var(--accent); transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(139,92,246,.25);
+}
+.t-card h3 { font-size:16px; margin-bottom:10px; color:#fff; }
+.t-card .meta { font-size:12px; color:var(--muted); line-height:1.9; }
+.t-card .meta b { color:var(--accent2); }
+.t-card .row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.status {
+  padding:4px 10px; border-radius:20px; font-size:10px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.5px;
+}
+.status.open { background:#0f2e1a; color:#4ade80; }
+.status.closed { background:#2b2000; color:#fbbf24; }
+.status.live { background:#3b0a0a; color:#f87171; animation:pulse 1.5s infinite; }
+.status.ended { background:#1e1e2e; color:#8b8ba7; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.6;} }
+
+/* FORMS */
+.form { display:flex; flex-direction:column; gap:10px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+label { font-size:12px; color:var(--muted); font-weight:600; margin-bottom:2px; display:block; }
+input, textarea, select {
+  width:100%; padding:11px 13px; background:#0a0a12;
+  border:1px solid var(--border); border-radius:10px;
+  color:var(--text); font-size:13px; outline:none;
+  font-family:inherit; resize:vertical;
+}
+input:focus, textarea:focus, select:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 10px rgba(139,92,246,.3);
+}
+
+/* BUTTONS */
+.btn {
+  padding:11px 18px; border:none; border-radius:10px;
+  font-weight:700; font-size:13px; cursor:pointer; transition:.2s;
+  font-family:inherit;
+}
+.btn.primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; }
+.btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(139,92,246,.45); }
+.btn.ghost { background:var(--card); color:var(--muted); border:1px solid var(--border); }
+.btn.ghost:hover { color:#fff; border-color:var(--accent); }
+.btn.danger { background:#3b1010; color:#ff8a8a; border:1px solid #612020; }
+.btn.ok { background:#0f2e1a; color:#4ade80; border:1px solid #166534; }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+.btn-row { display:flex; gap:8px; flex-wrap:wrap; }
+
+/* TABS */
+.tabs { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; border-bottom:1px solid var(--border); padding-bottom:8px; }
+.tabs button {
+  padding:8px 14px; background:transparent; color:var(--muted);
+  border:none; cursor:pointer; font-weight:600; font-size:13px;
+  border-radius:8px; transition:.2s;
+}
+.tabs button:hover { color:#fff; }
+.tabs button.active { background:var(--card); color:var(--accent2); }
+
+/* TEAM CARD */
+.team-card {
+  background:#0d0d17; border:1px solid var(--border);
+  border-radius:12px; padding:14px 16px;
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+  margin-bottom:10px; flex-wrap:wrap;
+}
+.team-info { font-size:13px; line-height:1.7; }
+.team-info b { color:var(--accent2); }
+.team-info small { color:var(--muted); }
+.badge {
+  padding:3px 9px; border-radius:20px; font-size:10px; font-weight:700;
+}
+.badge.pending { background:#2b2000; color:#fbbf24; }
+.badge.approved { background:#0f2e1a; color:#4ade80; }
+.badge.rejected { background:#3b1010; color:#ff8a8a; }
+
+/* TABLE */
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th, td { padding:10px 12px; text-align:left; border-bottom:1px solid var(--border); }
+th { color:var(--accent2); font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
+tr:hover td { background:#0d0d17; }
+.rank { font-weight:800; color:var(--gold); }
+.pos-1 { color:var(--gold); }
+.pos-2 { color:#c0c0c0; }
+.pos-3 { color:#cd7f32; }
+
+/* MODAL */
+.modal-bg {
+  position:fixed; inset:0; background:rgba(0,0,0,.7);
+  display:grid; place-items:center; padding:20px; z-index:100;
+}
+.modal {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:16px; padding:24px; max-width:520px; width:100%;
+  max-height:90vh; overflow-y:auto;
+}
+.modal h3 { margin-bottom:16px; font-size:17px; color:#fff; }
+
+/* MISC */
+.empty {
+  text-align:center; padding:50px 20px;
+  color:var(--muted); font-size:14px;
+}
+.notice {
+  padding:12px 16px; border-radius:10px; font-size:13px;
+  margin-bottom:14px;
+}
+.notice.info { background:#0f2340; color:#93c5fd; border:1px solid #1e3a5f; }
+.notice.err { background:#3b1010; color:#ff8a8a; border:1px solid #612020; }
+.notice.ok { background:#0f2e1a; color:#86efac; border:1px solid #166534; }
+.hidden { display:none !important; }
+.back { color:var(--accent2); cursor:pointer; font-size:13px; margin-bottom:12px; display:inline-block; }
+.back:hover { text-decoration:underline; }
+.stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+.stat {
+  background:#0d0d17; border:1px solid var(--border);
+  border-radius:10px; padding:12px; text-align:center;
+}
+.stat .v { font-size:20px; font-weight:800; color:var(--accent2); }
+.stat .l { font-size:11px; color:var(--muted); margin-top:4px; text-transform:uppercase; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo">🏆</div>
+      <div>
+        <h1>NEXORA</h1>
+        <p>Tournament Panel</p>
+      </div>
+    </div>
+    <nav>
+      <button data-nav="home" class="active">🏠 Tournaments</button>
+      <button data-nav="admin">⚙️ Admin</button>
+    </nav>
+  </header>
+
+  <!-- HOME VIEW -->
+  <section id="view-home">
+    <div class="panel">
+      <h2>🔥 Active Tournaments</h2>
+      <div id="tournamentList" class="grid">
+        <div class="empty">Loading...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETAIL VIEW -->
+  <section id="view-detail" class="hidden">
+    <div class="panel">
+      <span class="back" onclick="goHome()">← Back to tournaments</span>
+      <div id="detailHeader"></div>
+      <div class="tabs" id="detailTabs">
+        <button data-tab="info" class="active">ℹ️ Info</button>
+        <button data-tab="teams">👥 Teams</button>
+        <button data-tab="points">📊 Points Table</button>
+        <button data-tab="matches">⚔️ Matches</button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </section>
+
+  <!-- ADMIN VIEW -->
+  <section id="view-admin" class="hidden">
+    <div id="adminLogin" class="panel">
+      <h2>🔐 Admin Login</h2>
+      <p class="notice info">Default key: <b>nexora123</b> (server.js me change kar sakte ho)</p>
+      <div class="form">
+        <div>
+          <label>Admin Key</label>
+          <input type="password" id="adminKeyInput" placeholder="Enter admin key..." />
+        </div>
+        <button class="btn primary" onclick="adminLogin()">Login</button>
+      </div>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+      <div class="panel">
+        <h2>➕ Create Tournament</h2>
+        <div class="form">
+          <div>
+            <label>Tournament Name *</label>
+            <input id="tName" placeholder="e.g. NEXORA Weekly Cup #1" />
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Game</label>
+              <input id="tGame" placeholder="Free Fire" value="Free Fire" />
+            </div>
+            <div>
+              <label>Date</label>
+              <input id="tDate" type="date" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Slots</label>
+              <input id="tSlots" type="number" value="12" min="2" />
+            </div>
+            <div>
+              <label>Entry Fee</label>
+              <input id="tEntry" placeholder="Free / ₹50" />
+            </div>
+          </div>
+          <div>
+            <label>Prize Pool</label>
+            <input id="tPrize" placeholder="e.g. ₹1000 + 500 Diamonds" />
+          </div>
+          <div>
+            <label>Rules (optional)</label>
+            <textarea id="tRules" rows="3" placeholder="No hack, no teaming..."></textarea>
+          </div>
+          <button class="btn primary" onclick="createTournament()">Create Tournament</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>⚙️ Manage Tournaments</h2>
+        <div id="adminTournamentList"></div>
+      </div>
+
+      <div class="panel">
+        <button class="btn ghost" onclick="adminLogout()">🚪 Logout</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal-bg hidden">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+  </html>
